@@ -1,0 +1,29 @@
+{
+    "name": "mysql-mcp",
+    "version": "1.0.0",
+    "description": "MySQL MCP readonly server for database interaction",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js"
+    },
+    "bin": {
+        "mysql-mcp": "./index.js"
+    },
+    "keywords": [
+        "mcp",
+        "mysql",
+        "database",
+        "claude",
+        "cursor"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.9.0",
+        "mysql2": "^2.3.3",
+        "nodemon": "^3.1.9",
+        "zod": "^3.22.4"
+    }
+}
