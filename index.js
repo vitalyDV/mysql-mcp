@@ -1,26 +1,18 @@
 #!/usr/bin/env node
 
-import {
-    McpServer,
-    ResourceTemplate,
-} from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-// Удаляем импорт HttpServerTransport, так как он не найден
+import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+// Remove HttpServerTransport import as it's not found
 // import { HttpServerTransport } from "@modelcontextprotocol/sdk/server/http.js";
-import { z } from "zod";
-import mysql from "mysql2/promise";
+import { z } from 'zod';
+import mysql from 'mysql2/promise';
 
 // Check for required environment variables
-const requiredEnvVars = ["MYSQL_HOST", "MYSQL_PORT", "MYSQL_USER", "MYSQL_DB"];
-const missingEnvVars = requiredEnvVars.filter(
-    (varName) => !process.env[varName],
-);
+const requiredEnvVars = ['MYSQL_HOST', 'MYSQL_PORT', 'MYSQL_USER', 'MYSQL_DB'];
+const missingEnvVars = requiredEnvVars.filter((varName) => !process.env[varName]);
 
 if (missingEnvVars.length > 0) {
-    console.error(
-        "❌ Missing required environment variables:",
-        missingEnvVars.join(", "),
-    );
+    console.error('❌ Missing required environment variables:', missingEnvVars.join(', '));
     process.exit(1);
 }
 
@@ -29,7 +21,7 @@ const mysqlConfig = {
     host: process.env.MYSQL_HOST,
     port: parseInt(process.env.MYSQL_PORT, 3306),
     user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASS || "",
+    password: process.env.MYSQL_PASS || '',
     database: process.env.MYSQL_DB,
     waitForConnections: true,
     connectionLimit: 10,
@@ -45,10 +37,10 @@ async function initMySqlConnection() {
         pool = mysql.createPool(mysqlConfig);
         const connection = await pool.getConnection();
         connection.release();
-        console.log("Successfully connected to MySQL");
+        console.log('Successfully connected to MySQL');
         return true;
     } catch (error) {
-        console.error("Error connecting to MySQL:", error);
+        console.error('Error connecting to MySQL:', error);
         return false;
     }
 }
@@ -68,7 +60,7 @@ async function executeQuery(query, params = []) {
             result,
         };
     } catch (error) {
-        console.error("Error executing query:", error);
+        console.error('Error executing query:', error);
         return {
             success: false,
             error: error.message,
@@ -106,7 +98,7 @@ async function getSchema(table = null) {
             };
         }
     } catch (error) {
-        console.error("Error getting schema:", error);
+        console.error('Error getting schema:', error);
         return {
             success: false,
             error: error.message,
@@ -116,25 +108,25 @@ async function getSchema(table = null) {
 
 // Create MCP server
 const server = new McpServer({
-    name: "MySQL MCP",
-    version: "1.0.0",
+    name: 'MySQL MCP',
+    version: '1.0.0',
 });
 
 // Add SQL query execution tool
-server.tool("query", { query: z.string() }, async ({ query }) => {
+server.tool('query', { query: z.string() }, async ({ query }) => {
     // Check that query starts with SELECT, SHOW, EXPLAIN or DESCRIBE
     const lowercaseQuery = query.trim().toLowerCase();
     if (
-        !lowercaseQuery.startsWith("select") &&
-        !lowercaseQuery.startsWith("show") &&
-        !lowercaseQuery.startsWith("explain") &&
-        !lowercaseQuery.startsWith("describe")
+        !lowercaseQuery.startsWith('select') &&
+        !lowercaseQuery.startsWith('show') &&
+        !lowercaseQuery.startsWith('explain') &&
+        !lowercaseQuery.startsWith('describe')
     ) {
         return {
             content: [
                 {
-                    type: "text",
-                    text: "Only SELECT, SHOW, EXPLAIN and DESCRIBE queries are allowed",
+                    type: 'text',
+                    text: 'Only SELECT, SHOW, EXPLAIN and DESCRIBE queries are allowed',
                 },
             ],
             isError: true,
@@ -146,7 +138,7 @@ server.tool("query", { query: z.string() }, async ({ query }) => {
         return {
             content: [
                 {
-                    type: "text",
+                    type: 'text',
                     text: JSON.stringify(result.result, null, 2),
                 },
             ],
@@ -155,7 +147,7 @@ server.tool("query", { query: z.string() }, async ({ query }) => {
         return {
             content: [
                 {
-                    type: "text",
+                    type: 'text',
                     text: `Error: ${result.error}`,
                 },
             ],
@@ -165,13 +157,13 @@ server.tool("query", { query: z.string() }, async ({ query }) => {
 });
 
 // Add tool for getting table schema
-server.tool("table-schema", { table: z.string() }, async ({ table }) => {
+server.tool('table-schema', { table: z.string() }, async ({ table }) => {
     const result = await getSchema(table);
     if (result.success) {
         return {
             content: [
                 {
-                    type: "text",
+                    type: 'text',
                     text: JSON.stringify(result.schema, null, 2),
                 },
             ],
@@ -180,7 +172,7 @@ server.tool("table-schema", { table: z.string() }, async ({ table }) => {
         return {
             content: [
                 {
-                    type: "text",
+                    type: 'text',
                     text: `Error: ${result.error}`,
                 },
             ],
@@ -190,13 +182,13 @@ server.tool("table-schema", { table: z.string() }, async ({ table }) => {
 });
 
 // Add tool for listing all tables
-server.tool("list-tables", {}, async () => {
+server.tool('list-tables', {}, async () => {
     const result = await getSchema();
     if (result.success) {
         return {
             content: [
                 {
-                    type: "text",
+                    type: 'text',
                     text: JSON.stringify(result.schema, null, 2),
                 },
             ],
@@ -205,7 +197,7 @@ server.tool("list-tables", {}, async () => {
         return {
             content: [
                 {
-                    type: "text",
+                    type: 'text',
                     text: `Error: ${result.error}`,
                 },
             ],
@@ -215,34 +207,28 @@ server.tool("list-tables", {}, async () => {
 });
 
 // Resource for accessing table data
-server.resource(
-    "table",
-    new ResourceTemplate("table://{name}", { list: undefined }),
-    async (uri, { name }) => {
-        const result = await executeQuery(
-            `SELECT * FROM ${pool.escapeId(name)} LIMIT 100`,
-        );
-        if (result.success) {
-            return {
-                contents: [
-                    {
-                        uri: uri.href,
-                        text: JSON.stringify(result.result, null, 2),
-                    },
-                ],
-            };
-        } else {
-            return {
-                contents: [
-                    {
-                        uri: uri.href,
-                        text: `Error getting data from table ${name}: ${result.error}`,
-                    },
-                ],
-            };
-        }
-    },
-);
+server.resource('table', new ResourceTemplate('table://{name}', { list: undefined }), async (uri, { name }) => {
+    const result = await executeQuery(`SELECT * FROM ${pool.escapeId(name)} LIMIT 100`);
+    if (result.success) {
+        return {
+            contents: [
+                {
+                    uri: uri.href,
+                    text: JSON.stringify(result.result, null, 2),
+                },
+            ],
+        };
+    } else {
+        return {
+            contents: [
+                {
+                    uri: uri.href,
+                    text: `Error getting data from table ${name}: ${result.error}`,
+                },
+            ],
+        };
+    }
+});
 
 // Initialize database connection before starting
 await initMySqlConnection();

@@ -2,9 +2,15 @@
 
 This project implements an MCP (Model Context Protocol) server for working with MySQL database.
 
-## Installation
+## Repository
+
+This project is available on GitHub:
+https://github.com/vitalyDV/mysql-mcp
+
+### Clone the repository
 
 ```bash
+git clone https://github.com/vitalyDV/mysql-mcp.git
 cd mysql-mcp
 npm install
 ```
@@ -43,3 +49,7 @@ npm install
 - `query` - execute SQL queries (only SELECT, SHOW, EXPLAIN, DESCRIBE)
 - `table-schema` - get table structure
 - `list-tables` - get list of all tables in the database
+
+## Available MCP resources
+
+- `table://{name}` - get data from the specified table (up to 100 rows)

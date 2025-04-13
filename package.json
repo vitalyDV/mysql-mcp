@@ -1,7 +1,7 @@
 {
     "name": "mysql-mcp",
     "version": "1.0.0",
-    "description": "MySQL MCP readonly server for database interaction",
+    "description": "MySQL MCP server for database interaction",
     "main": "index.js",
     "type": "module",
     "scripts": {
@@ -10,6 +10,14 @@
     },
     "bin": {
         "mysql-mcp": "./index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vitalyDV/mysql-mcp.git"
+    },
+    "homepage": "https://github.com/vitalyDV/mysql-mcp",
+    "bugs": {
+        "url": "https://github.com/vitalyDV/mysql-mcp/issues"
     },
     "keywords": [
         "mcp",
